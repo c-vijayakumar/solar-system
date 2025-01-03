@@ -37,7 +37,9 @@ jobs:
           id: nodejs-unit-testing-step
           run: npm test
           
-        - name: Archive Test Result
+        - name: Archive Test Result # By default each steps will be add with if colon success() 
+                                    # which makes the step will run ony when the previous step run successfully
+                                    # if the previous steps failed this steps will be aborted
           if: failure() && (steps.nodejs-unit-testing-step.outcome == 'failure' || steps.nodejs-unit-testing-step.outcome == 'success')
           uses: actions/upload-artifact@v3
           with:
@@ -59,8 +61,8 @@ jobs:
       - name: Install Dependencies
         run: npm install
       
-      - name: Check Code Coverage
-        continue-on-error: true
+      - name: Check Code Coverage 
+        continue-on-error: true # if any error in the code coverage step still the next step (Archive Test Result) continue to run 
         run: npm run coverage
       
       - name: Archive Test Result
