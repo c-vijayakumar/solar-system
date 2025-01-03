@@ -37,10 +37,13 @@ jobs:
           id: nodejs-unit-testing-step
           run: npm test
           
-        - name: Archive Test Result # By default each steps will be add with if colon success() 
-                                    # which makes the step will run ony when the previous step run successfully
-                                    # if the previous steps failed this steps will be aborted
-          if: failure() && (steps.nodejs-unit-testing-step.outcome == 'failure' || steps.nodejs-unit-testing-step.outcome == 'success')
+        - name: Archive Test Result # By default each steps will be add with if:success() 
+                                    # which means the step will run ony when the previous step run successfully
+                                    # if the previous steps failed this steps will be ignored
+
+                                    # if you want this step to run even previous step was succcess or failure use if:always()
+          #if:failure() && (steps.nodejs-unit-testing-step.outcome == 'failure' || steps.nodejs-unit-testing-step.outcome == 'success')
+          if: always()
           uses: actions/upload-artifact@v3
           with:
             name: Mocha-Test-Result
