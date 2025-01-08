@@ -103,7 +103,7 @@ jobs:
         with:
           context: .
           push: false
-          tags: ${{ vars.DOCKERHUB_USERNAME}}/solor-system:${{ github.sha }}
+          tags: docker.io/solor-system:${{ github.sha }}
       
       - name: Docker Image Testing
         run: |
