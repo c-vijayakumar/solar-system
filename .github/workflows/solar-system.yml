@@ -88,7 +88,8 @@ jobs:
           path: coverage
           retention-days: 5
 
-    login:
+    docker:
+      name: Containerization
       runs-on: ubuntu-latest
       needs: [unit-testing, code-coverage]
       steps:
@@ -100,6 +101,13 @@ jobs:
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: GHCR Login
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -124,11 +132,13 @@ jobs:
           echo Testing Image URL using wget
           wget -q -O - 127.0.0.1:3000/live | grep live
     
-      - name: Build and push
-        uses: docker/build-push-action@v6
+      - name: Container Registry push
+        uses: docker/build-push-action@v6 # this action build the image and push the image to all the registory
         with:
           context: .
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/solor-system:${{ github.sha }}
+          tags: |  
+            ${{ vars.DOCKERHUB_USERNAME }}/solor-system:${{ github.sha }} 
+            ghcr.io/${{ github.repository_owner}}/solor-system:${{ github.sha }}
       
 
