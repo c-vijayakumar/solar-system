@@ -6,13 +6,28 @@ on:
     branches:
       - main
       - 'feature/*'
-env:
+env: # workflow level environemnt variable will be used in all the jobs
   MONGO_URI: 'mongodb+srv://supercluster.d83jj.mongodb.net/superData'
   MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
   MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}   
 jobs:
     unit-testing:
         name: Unit Testing
+        # When you run a job directly on the runner machine, you'll need to map the ports on the service container to 
+        #  ports on the Docker host. You can access service containers from the Docker host using localhost and the 
+        #    Docker host port number.
+        
+        # Docker host means the runner machine which hosting the docker container
+        services:
+          # 
+          mongo-db:
+            image: siddharth67/mongo-db:non-prod
+            ports: 
+              - 27017:27017
+        env: # job level environment variable applicable only to this job
+          MONGO_URI: 'mongodb//localhost:27017/superData' 
+          MONGO_USERNAME: non-prod-user
+          MONGO_PASSWORD: non-prod-password   
         strategy:
           matrix:
             nodejs_version: [18, 19, 20]
